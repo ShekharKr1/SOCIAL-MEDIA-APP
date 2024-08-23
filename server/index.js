@@ -3,6 +3,7 @@ import bodyParser from "body-parser";
 import cors from "cors";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
+import path from "path";
 
 // routes
 import AuthRoute from './routes/AuthRoute.js'
@@ -14,23 +15,12 @@ import MessageRoute from './routes/MessageRoute.js'
 
 const app = express();
 
-
 // middleware
 app.use(bodyParser.json({ limit: "30mb", extended: true }));
 app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
 
 app.use(cors());
 
-
-
-
-// const corsOptions = {
-//     origin: ['http://localhost:3000', 'http://localhost:3001'], // Add all allowed origins here
-//     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allow the necessary HTTP methods
-//     credentials: true, // Allow cookies to be sent with the request
-// };
-
-// app.use(cors(corsOptions));
 
 
 // to serve images inside public folder
@@ -53,3 +43,23 @@ app.use('/posts', PostRoute)
 app.use('/upload', UploadRoute)
 app.use('/chat', ChatRoute)
 app.use('/message', MessageRoute)
+
+
+//-----------------------------------------Deployement----------------------------------------------
+
+const __dirname1 = path.resolve()
+if (process.env.NODE_ENV = "productions") {
+    app.use(express.static(path.join(__dirname1, "../client/build")));
+    app.get("*", (req, res) => {
+        res.sendFile(path.resolve(__dirname1, "client", "build", "index.html"));
+    });
+} else {
+    app.get("/", (req, res) => {
+        res.send("API Running Succesfully......")
+    })
+}
+
+
+//-----------------------------------------Deployement----------------------------------------------
+
+
